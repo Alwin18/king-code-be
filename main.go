@@ -1,5 +1,14 @@
 package main
 
+import (
+	"log"
+
+	"github.com/Alwin18/king-code/config"
+)
+
 func main() {
-	println("I'M a King!!")
+	config.LoadEnv()
+	config.InitDatabase()
+	config.MigrateDatabase()
+	log.Println("database migrated successfully!")
 }
