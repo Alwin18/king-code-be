@@ -9,6 +9,10 @@ type ChallengeRepository struct {
 	DB *gorm.DB
 }
 
+func NewChallengeRepository(db *gorm.DB) *ChallengeRepository {
+	return &ChallengeRepository{DB: db}
+}
+
 func (r *ChallengeRepository) CreateChallenge(challenge *models.CodingChallenge) error {
 	return r.DB.Create(challenge).Error
 }

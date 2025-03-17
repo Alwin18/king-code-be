@@ -9,6 +9,10 @@ type LeaderboardRepository struct {
 	DB *gorm.DB
 }
 
+func NewLeaderboardRepository(db *gorm.DB) *LeaderboardRepository {
+	return &LeaderboardRepository{DB: db}
+}
+
 func (r *LeaderboardRepository) GetTopPlayers(limit int) ([]models.Leaderboard, error) {
 	var leaderboard []models.Leaderboard
 	result := r.DB.Order("xp DESC").Limit(limit).Find(&leaderboard)

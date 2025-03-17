@@ -1,6 +1,11 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	ID        string `gorm:"type:uuid;primaryKey"`
@@ -15,4 +20,18 @@ type User struct {
 
 func (User) TableName() string {
 	return "users"
+}
+
+func (u *User) Validate() error {
+	if u.Username == "" || u.Email == "" || u.Password == "" {
+		return errors.New("username, email, and password are required")
+	}
+	return nil
+}
+
+func (u *User) Default() {
+	u.ID = uuid.New().String()
+	u.CreatedAt = time.Now()
+	u.XP = 0
+	u.Level = 1
 }
