@@ -9,6 +9,10 @@ type LevelRepository struct {
 	DB *gorm.DB
 }
 
+func NewLevelRepository(db *gorm.DB) *LevelRepository {
+	return &LevelRepository{DB: db}
+}
+
 func (r *LevelRepository) CreateLevel(level *models.Level) error {
 	return r.DB.Create(level).Error
 }

@@ -9,6 +9,10 @@ type ProgressRepository struct {
 	DB *gorm.DB
 }
 
+func NewProgressRepository(db *gorm.DB) *ProgressRepository {
+	return &ProgressRepository{DB: db}
+}
+
 func (r *ProgressRepository) CreateProgress(progress *models.UserProgress) error {
 	return r.DB.Create(progress).Error
 }
