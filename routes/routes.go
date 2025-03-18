@@ -15,6 +15,7 @@ type RouteConfig struct {
 	ProgressHandler    *handlers.ProgressHandler
 	ChallengeHandler   *handlers.ChallengeHandler
 	AuthHandler        *handlers.AuthHandler
+	LeadboardHandler   *handlers.LeaderboardHandler
 	WsHandler          gin.HandlerFunc
 }
 
@@ -34,6 +35,7 @@ func (r *RouteConfig) Setup() {
 	auth.GET("/levels", r.LevelHandler.GetAllLevels)
 	auth.GET("/progress/:userID", r.ProgressHandler.GetUserProgress)
 	auth.GET("/challenges/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
+	auth.GET("/leaderboard", r.LeadboardHandler.GetLeaderboard)
 
 	// WebSocket Route (Real-time coding & multiplayer)
 	v1.GET("/ws", r.WsHandler)

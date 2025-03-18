@@ -20,3 +20,7 @@ func (s *LeaderboardService) GetTopPlayers(limit int) ([]models.Leaderboard, err
 func (s *LeaderboardService) GetLeaderboardByUserID(userID string) (*models.Leaderboard, error) {
 	return s.Repo.GetLeaderboardByUserID(userID)
 }
+
+func (s *LeaderboardService) GetLeaderboard(limit int) ([]models.LeaderboardEntry, error) {
+	return s.Repo.GetLeaderboard(limit)
+}

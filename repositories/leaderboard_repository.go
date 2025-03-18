@@ -27,3 +27,18 @@ func (r *LeaderboardRepository) GetLeaderboardByUserID(userID string) (*models.L
 	}
 	return &leaderboard, nil
 }
+
+// GetLeaderboard - Ambil daftar pemain berdasarkan skor tertinggi
+func (r *LeaderboardRepository) GetLeaderboard(limit int) ([]models.LeaderboardEntry, error) {
+	var leaderboard []models.LeaderboardEntry
+	err := r.DB.Raw(`
+		SELECT users.id, users.username, COALESCE(SUM(user_progresses.score), 0) AS total_score
+		FROM users
+		LEFT JOIN user_progresses ON users.id = user_progresses.user_id
+		GROUP BY users.id
+		ORDER BY total_score DESC
+		LIMIT ?
+	`, limit).Scan(&leaderboard).Error
+
+	return leaderboard, err
+}

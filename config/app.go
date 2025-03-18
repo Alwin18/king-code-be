@@ -23,12 +23,14 @@ func Bootstrap(cfg *BootstrapConfig) {
 	progressRepo := repositories.NewProgressRepository(cfg.DB)
 	challengeRepo := repositories.NewChallengeRepository(cfg.DB)
 	tokenRepo := repositories.NewTokenRepository(cfg.DB)
+	leadBoardRepo := repositories.NewLeaderboardRepository(cfg.DB)
 
 	// Init Service
 	userService := services.NewUserService(userRepo)
 	levelService := services.NewLevelService(levelRepo)
 	progressService := services.NewProgressService(progressRepo)
 	challengeService := services.NewChallengeService(challengeRepo)
+	leadboardService := services.NewLeaderboardService(leadBoardRepo)
 
 	// Init Handler
 	userHandler := handlers.NewUserHandler(userService)
@@ -36,6 +38,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	progressHandler := handlers.NewProgressHandler(progressService)
 	challengeHandler := handlers.NewChallengeHandler(challengeService)
 	authHandler := handlers.NewAuthHandler(userService, tokenRepo)
+	leadboardHandler := handlers.NewLeaderboardHandler(leadboardService)
 
 	// init websocket
 	ws := handlers.WebSocketHandler
@@ -50,6 +53,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 		LevelHandler:       levelHandler,
 		AuthHandler:        authHandler,
 		ProgressHandler:    progressHandler,
+		LeadboardHandler:   leadboardHandler,
 		ChallengeHandler:   challengeHandler,
 		WsHandler:          ws,
 	}

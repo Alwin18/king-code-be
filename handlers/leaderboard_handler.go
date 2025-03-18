@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/Alwin18/king-code/models"
+	"github.com/Alwin18/king-code/routes/response"
 	"github.com/Alwin18/king-code/services"
 	"github.com/gin-gonic/gin"
 )
@@ -32,4 +34,15 @@ func (h *LeaderboardHandler) GetLeaderboardByUserID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, leaderboard)
+}
+
+// GetLeaderboard - Handler untuk mendapatkan leaderboard
+func (h *LeaderboardHandler) GetLeaderboard(c *gin.Context) {
+	leaderboard, err := h.Service.GetLeaderboard(10)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch leaderboard"})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.Response[[]models.LeaderboardEntry]{Status: http.StatusOK, Message: "Success", Data: leaderboard})
 }

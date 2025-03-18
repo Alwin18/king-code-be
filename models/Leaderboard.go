@@ -9,3 +9,9 @@ type Leaderboard struct {
 	Rank      int
 	UpdatedAt time.Time
 }
+
+type LeaderboardEntry struct {
+	ID         string `json:"id"`
+	Username   string `json:"username"`
+	TotalScore int    `json:"total_score"`
+}
