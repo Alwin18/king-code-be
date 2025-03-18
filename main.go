@@ -2,40 +2,53 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/Alwin18/king-code/config"
-	"github.com/Alwin18/king-code/handlers"
-	"github.com/Alwin18/king-code/repositories"
-	"github.com/Alwin18/king-code/routes"
-	"github.com/Alwin18/king-code/services"
 )
 
 func main() {
-	config.LoadEnv()
-	config.InitDatabase()
-	// config.MigrateDatabase()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Application panicked: %v", r)
+		}
+	}()
 
-	// Init Repository
-	userRepo := repositories.NewUserRepository(config.DB)
-	levelRepo := repositories.NewLevelRepository(config.DB)
-	progressRepo := repositories.NewProgressRepository(config.DB)
-	challengeRepo := repositories.NewChallengeRepository(config.DB)
+	cfg, err := config.LoadEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// Init Service
-	userService := services.NewUserService(userRepo)
-	levelService := services.NewLevelService(levelRepo)
-	progressService := services.NewProgressService(progressRepo)
-	challengeService := services.NewChallengeService(challengeRepo)
+	db := config.NewDatabase(cfg)
+	app := config.NewGin(cfg)
 
-	// Init Handler
-	userHandler := handlers.NewUserHandler(userService)
-	levelHandler := handlers.NewLevelHandler(levelService)
-	progressHandler := handlers.NewProgressHandler(progressService)
-	challengeHandler := handlers.NewChallengeHandler(challengeService)
+	// setup bootstrap
+	config.Bootstrap(&config.BootstrapConfig{
+		DB:  db,
+		App: app,
+		Cfg: cfg,
+	})
 
-	// Setup Router
-	router := routes.SetupRouter(userHandler, levelHandler, progressHandler, challengeHandler, handlers.WebSocketHandler)
+	// create signal handling to gracefully shut down the application
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	log.Println("Server is running on port 8080...")
-	router.Run(":8080")
+	// start the server in a goroutine
+	go func() {
+		err := app.Run(":" + cfg.ServerPort)
+		if err != nil {
+			log.Printf("Error running server: %v", err)
+		}
+	}()
+
+	// wait for shutdown signal
+	<-sigs
+	log.Println("Shutting down...")
+
+	// Close the database connection
+	config.CloseDB(db)
+
+	log.Println("Application exited gracefully.")
 }

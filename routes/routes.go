@@ -5,42 +5,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(
-	userHandler *handlers.UserHandler,
-	levelHandler *handlers.LevelHandler,
-	progressHandler *handlers.ProgressHandler,
-	challengeHandler *handlers.ChallengeHandler,
-	wsHandler gin.HandlerFunc,
-) *gin.Engine {
-	router := gin.Default()
+type RouteConfig struct {
+	App                *gin.Engine
+	CORSMiddleware     gin.HandlerFunc
+	RecoveryMiddleware gin.HandlerFunc
+	UserHandler        *handlers.UserHandler
+	LevelHandler       *handlers.LevelHandler
+	ProgressHandler    *handlers.ProgressHandler
+	ChallengeHandler   *handlers.ChallengeHandler
+	WsHandler          gin.HandlerFunc
+}
+
+func (r *RouteConfig) Setup() {
+	v1 := r.App.Group("api/v1")
+	r.App.Use(r.CORSMiddleware, r.RecoveryMiddleware)
 
 	// User Routes
-	user := router.Group("/users")
+	user := v1.Group("users")
 	{
-		user.POST("/register", userHandler.RegisterUser)
-		user.GET("/:id", userHandler.GetUserByID)
+		user.POST("/register", r.UserHandler.RegisterUser)
+		user.GET("/:id", r.UserHandler.GetUserByID)
 	}
 
 	// Level Routes
-	level := router.Group("/levels")
+	level := v1.Group("/levels")
 	{
-		level.GET("/", levelHandler.GetAllLevels)
+		level.GET("/", r.LevelHandler.GetAllLevels)
 	}
 
 	// Progress Routes
-	progress := router.Group("/progress")
+	progress := v1.Group("/progress")
 	{
-		progress.GET("/:userID", progressHandler.GetUserProgress)
+		progress.GET("/:userID", r.ProgressHandler.GetUserProgress)
 	}
 
 	// Challenge Routes
-	challenge := router.Group("/challenges")
+	challenge := v1.Group("/challenges")
 	{
-		challenge.GET("/level/:levelID", challengeHandler.GetChallengesByLevel)
+		challenge.GET("/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
 	}
 
 	// WebSocket Route (Real-time coding & multiplayer)
-	router.GET("/ws", wsHandler)
-
-	return router
+	v1.GET("/ws", r.WsHandler)
 }
