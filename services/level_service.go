@@ -14,6 +14,7 @@ func NewLevelService(repo *repositories.LevelRepository) *LevelService {
 }
 
 func (s *LevelService) CreateLevel(level *models.Level) error {
+	level.Default()
 	return s.Repo.CreateLevel(level)
 }
 

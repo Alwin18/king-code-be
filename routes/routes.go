@@ -29,11 +29,14 @@ func (r *RouteConfig) Setup() {
 
 	// Protected Routes
 	auth := v1.Group("/")
-	auth.Use(r.AuthMiddleware)
+	// auth.Use(r.AuthMiddleware)
 
 	auth.GET("/users/:id", r.UserHandler.GetUserByID)
 	auth.GET("/levels", r.LevelHandler.GetAllLevels)
+	auth.POST("/levels", r.LevelHandler.CreateLevel)
 	auth.GET("/progress/:userID", r.ProgressHandler.GetUserProgress)
+	auth.POST("progress", r.ProgressHandler.CreateProgress)
+	auth.PATCH("/progress", r.ProgressHandler.UpdateUserProgress)
 	auth.GET("/challenges/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
 	auth.GET("/leaderboard", r.LeadboardHandler.GetLeaderboard)
 

@@ -22,3 +22,9 @@ type LoginResponse struct {
 	Token        string `json:"token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type UpdateProgressRequest struct {
+	ProgressID string `json:"progress_id" binding:"required"`
+	LevelID    string `json:"level_id" binding:"required"`
+	UserID     string `json:"user_id" binding:"required"`
+}

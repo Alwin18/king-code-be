@@ -28,7 +28,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	// Init Service
 	userService := services.NewUserService(userRepo)
 	levelService := services.NewLevelService(levelRepo)
-	progressService := services.NewProgressService(progressRepo)
+	progressService := services.NewProgressService(progressRepo, levelRepo)
 	challengeService := services.NewChallengeService(challengeRepo)
 	leadboardService := services.NewLeaderboardService(leadBoardRepo)
 
