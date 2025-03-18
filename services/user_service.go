@@ -75,3 +75,26 @@ func (s *UserService) GetUserByID(c *gin.Context, id string) (*entity.GetUserByI
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 	return s.Repo.GetUserByEmail(email)
 }
+
+func (s *UserService) AuthenticateUser(email, password string) (*entity.GetUserByIdResponse, error) {
+	user, err := s.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := utils.VerififyPassword(user.Password, password); err != nil {
+		return nil, err
+	}
+
+	response := &entity.GetUserByIdResponse{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		XP:        user.XP,
+		Level:     user.Level,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	return response, nil
+}

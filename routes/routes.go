@@ -9,10 +9,12 @@ type RouteConfig struct {
 	App                *gin.Engine
 	CORSMiddleware     gin.HandlerFunc
 	RecoveryMiddleware gin.HandlerFunc
+	AuthMiddleware     gin.HandlerFunc
 	UserHandler        *handlers.UserHandler
 	LevelHandler       *handlers.LevelHandler
 	ProgressHandler    *handlers.ProgressHandler
 	ChallengeHandler   *handlers.ChallengeHandler
+	AuthHandler        *handlers.AuthHandler
 	WsHandler          gin.HandlerFunc
 }
 
@@ -20,30 +22,18 @@ func (r *RouteConfig) Setup() {
 	v1 := r.App.Group("api/v1")
 	r.App.Use(r.CORSMiddleware, r.RecoveryMiddleware)
 
-	// User Routes
-	user := v1.Group("users")
-	{
-		user.POST("/register", r.UserHandler.RegisterUser)
-		user.GET("/:id", r.UserHandler.GetUserByID)
-	}
+	// Public Routes
+	v1.POST("/users/register", r.UserHandler.RegisterUser)
+	v1.POST("/users/login", r.AuthHandler.Login)
 
-	// Level Routes
-	level := v1.Group("/levels")
-	{
-		level.GET("/", r.LevelHandler.GetAllLevels)
-	}
+	// Protected Routes
+	auth := v1.Group("/")
+	auth.Use(r.AuthMiddleware)
 
-	// Progress Routes
-	progress := v1.Group("/progress")
-	{
-		progress.GET("/:userID", r.ProgressHandler.GetUserProgress)
-	}
-
-	// Challenge Routes
-	challenge := v1.Group("/challenges")
-	{
-		challenge.GET("/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
-	}
+	auth.GET("/users/:id", r.UserHandler.GetUserByID)
+	auth.GET("/levels", r.LevelHandler.GetAllLevels)
+	auth.GET("/progress/:userID", r.ProgressHandler.GetUserProgress)
+	auth.GET("/challenges/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
 
 	// WebSocket Route (Real-time coding & multiplayer)
 	v1.GET("/ws", r.WsHandler)

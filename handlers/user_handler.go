@@ -22,7 +22,7 @@ func NewUserHandler(service *services.UserService) *UserHandler {
 func (h *UserHandler) RegisterUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 		return
 	}
 

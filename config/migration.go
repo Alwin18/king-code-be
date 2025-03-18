@@ -14,5 +14,6 @@ func MigrateDatabase(DB *gorm.DB) {
 		&models.UserSubmission{},
 		&models.Leaderboard{},
 		&models.WebSocketLog{},
+		&models.RefreshToken{},
 	)
 }

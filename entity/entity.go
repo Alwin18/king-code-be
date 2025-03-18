@@ -11,3 +11,14 @@ type GetUserByIdResponse struct {
 	CreatedAt time.Time `json:"CreatedAt"`
 	UpdatedAt time.Time `json:"UpdatedAt"`
 }
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	GetUserByIdResponse
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}

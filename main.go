@@ -23,10 +23,11 @@ func main() {
 
 	db := config.NewDatabase(cfg)
 	app := config.NewGin(cfg)
+	// config.MigrateDatabase(db)
 
 	// setup bootstrap
 	config.Bootstrap(&config.BootstrapConfig{
-		DB:  db,
+		DB:  db.Debug(),
 		App: app,
 		Cfg: cfg,
 	})

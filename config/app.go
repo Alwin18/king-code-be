@@ -22,6 +22,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	levelRepo := repositories.NewLevelRepository(cfg.DB)
 	progressRepo := repositories.NewProgressRepository(cfg.DB)
 	challengeRepo := repositories.NewChallengeRepository(cfg.DB)
+	tokenRepo := repositories.NewTokenRepository(cfg.DB)
 
 	// Init Service
 	userService := services.NewUserService(userRepo)
@@ -34,21 +35,20 @@ func Bootstrap(cfg *BootstrapConfig) {
 	levelHandler := handlers.NewLevelHandler(levelService)
 	progressHandler := handlers.NewProgressHandler(progressService)
 	challengeHandler := handlers.NewChallengeHandler(challengeService)
+	authHandler := handlers.NewAuthHandler(userService, tokenRepo)
 
 	// init websocket
 	ws := handlers.WebSocketHandler
 
-	// setup middlewares
-	corsMiddleware := middleware.CORSMiddleware()
-	recoveryMiddleware := middleware.RecoveryMiddleware()
-
 	// Setup Router
 	routeConfig := routes.RouteConfig{
 		App:                cfg.App,
-		CORSMiddleware:     corsMiddleware,
-		RecoveryMiddleware: recoveryMiddleware,
+		CORSMiddleware:     middleware.CORSMiddleware(),
+		AuthMiddleware:     middleware.AuthMiddleware(),
+		RecoveryMiddleware: middleware.RecoveryMiddleware(),
 		UserHandler:        userHandler,
 		LevelHandler:       levelHandler,
+		AuthHandler:        authHandler,
 		ProgressHandler:    progressHandler,
 		ChallengeHandler:   challengeHandler,
 		WsHandler:          ws,
