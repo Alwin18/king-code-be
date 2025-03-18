@@ -31,7 +31,7 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, response.SuccessResponse{Status: http.StatusCreated, Message: "Success Register User"})
 }
 
 // Get User by ID

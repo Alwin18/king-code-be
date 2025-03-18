@@ -27,8 +27,12 @@ func (s *UserService) RegisterUser(c *gin.Context, user *models.User) error {
 
 	existData, err := s.GetUserByEmail(user.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
+		if err.Error() == "record not found" {
+
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
 	}
 
 	if existData != nil {
