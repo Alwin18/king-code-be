@@ -37,8 +37,9 @@ func (r *RouteConfig) Setup() {
 	auth.GET("/progress/:userID", r.ProgressHandler.GetUserProgress)
 	auth.POST("progress", r.ProgressHandler.CreateProgress)
 	auth.PATCH("/progress", r.ProgressHandler.UpdateUserProgress)
-	auth.GET("/challenges/level/:levelID", r.ChallengeHandler.GetChallengesByLevel)
 	auth.GET("/leaderboard", r.LeadboardHandler.GetLeaderboard)
+	auth.GET("challenges/level/:level_id", r.ChallengeHandler.GetChallengesByLevel)
+	auth.GET("challenges/:id", r.ChallengeHandler.GetChallengeByID)
 
 	// WebSocket Route (Real-time coding & multiplayer)
 	v1.GET("/ws", r.WsHandler)

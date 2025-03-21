@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -24,7 +23,6 @@ func NewProgressService(repo *repositories.ProgressRepository, levelRepo *reposi
 
 func (s *ProgressService) CreateProgress(progress *models.UserProgress) error {
 	progress.Default()
-	fmt.Println(progress)
 	return s.Repo.CreateProgress(progress)
 }
 

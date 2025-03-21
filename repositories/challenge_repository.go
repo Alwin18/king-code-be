@@ -13,12 +13,19 @@ func NewChallengeRepository(db *gorm.DB) *ChallengeRepository {
 	return &ChallengeRepository{DB: db}
 }
 
-func (r *ChallengeRepository) CreateChallenge(challenge *models.CodingChallenge) error {
-	return r.DB.Create(challenge).Error
+// GetChallengesByLevel - Ambil semua tantangan berdasarkan level
+func (r *ChallengeRepository) GetChallengesByLevel(levelID string) ([]models.Challenge, error) {
+	var challenges []models.Challenge
+	err := r.DB.Where("level_id = ?", levelID).Preload("TestCases").Find(&challenges).Error
+	return challenges, err
 }
 
-func (r *ChallengeRepository) GetChallengesByLevel(levelID string) ([]models.CodingChallenge, error) {
-	var challenges []models.CodingChallenge
-	result := r.DB.Where("level_id = ?", levelID).Find(&challenges)
-	return challenges, result.Error
+// GetChallengeByID - Ambil tantangan berdasarkan ID
+func (r *ChallengeRepository) GetChallengeByID(id string) (*models.Challenge, error) {
+	var challenge models.Challenge
+	err := r.DB.Where("id = ?", id).Preload("TestCases").First(&challenge).Error
+	if err != nil {
+		return nil, err
+	}
+	return &challenge, nil
 }
