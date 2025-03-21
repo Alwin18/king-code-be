@@ -13,6 +13,7 @@ type RouteConfig struct {
 	UserHandler        *handlers.UserHandler
 	LevelHandler       *handlers.LevelHandler
 	ProgressHandler    *handlers.ProgressHandler
+	SubbmissionHandler *handlers.SubmissionHandler
 	ChallengeHandler   *handlers.ChallengeHandler
 	AuthHandler        *handlers.AuthHandler
 	LeadboardHandler   *handlers.LeaderboardHandler
@@ -40,6 +41,7 @@ func (r *RouteConfig) Setup() {
 	auth.GET("/leaderboard", r.LeadboardHandler.GetLeaderboard)
 	auth.GET("challenges/level/:level_id", r.ChallengeHandler.GetChallengesByLevel)
 	auth.GET("challenges/:id", r.ChallengeHandler.GetChallengeByID)
+	auth.POST("submissions/submit", r.SubbmissionHandler.SubmitCode)
 
 	// WebSocket Route (Real-time coding & multiplayer)
 	v1.GET("/ws", r.WsHandler)

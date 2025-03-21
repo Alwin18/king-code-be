@@ -3,38 +3,40 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/Alwin18/king-code/models"
 	"github.com/Alwin18/king-code/services"
 	"github.com/gin-gonic/gin"
 )
 
 type SubmissionHandler struct {
-	Service *services.SubmissionService
+	service *services.SubmissionService
 }
 
 func NewSubmissionHandler(service *services.SubmissionService) *SubmissionHandler {
-	return &SubmissionHandler{Service: service}
+	return &SubmissionHandler{service}
 }
 
-func (s *SubmissionHandler) CreateSubmission(c *gin.Context) {
-	var submission models.UserSubmission
-	if err := c.ShouldBindJSON(&submission); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return
+// Submit jawaban user
+func (h *SubmissionHandler) SubmitCode(c *gin.Context) {
+	var req struct {
+		UserID      string `json:"user_id"`
+		ChallengeID string `json:"challenge_id"`
+		Code        string `json:"code"`
+		Language    string `json:"language"`
 	}
-	if err := s.Service.CreateSubmission(&submission); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create submission"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Submission created successfully"})
-}
 
-func (s *SubmissionHandler) GetSubmissionsByUser(c *gin.Context) {
-	userID := c.Param("userID")
-	submissions, err := s.Service.GetSubmissionsByUser(userID)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	submission, err := h.service.EvaluateSubmission(req.UserID, req.ChallengeID, req.Code, req.Language)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get submissions"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, submissions)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": submission.Status,
+		"score":  submission.Score,
+	})
 }

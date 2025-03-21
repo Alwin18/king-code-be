@@ -24,6 +24,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	challengeRepo := repositories.NewChallengeRepository(cfg.DB)
 	tokenRepo := repositories.NewTokenRepository(cfg.DB)
 	leadBoardRepo := repositories.NewLeaderboardRepository(cfg.DB)
+	submissionRepo := repositories.NewSubmissionRepository(cfg.DB)
 
 	// Init Service
 	userService := services.NewUserService(userRepo)
@@ -31,6 +32,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	progressService := services.NewProgressService(progressRepo, levelRepo)
 	challengeService := services.NewChallengeService(challengeRepo)
 	leadboardService := services.NewLeaderboardService(leadBoardRepo)
+	submissionService := services.NewSubmissionService(submissionRepo, challengeRepo)
 
 	// Init Handler
 	userHandler := handlers.NewUserHandler(userService)
@@ -39,6 +41,7 @@ func Bootstrap(cfg *BootstrapConfig) {
 	challengeHandler := handlers.NewChallengeHandler(challengeService)
 	authHandler := handlers.NewAuthHandler(userService, tokenRepo)
 	leadboardHandler := handlers.NewLeaderboardHandler(leadboardService)
+	submissionHandler := handlers.NewSubmissionHandler(submissionService)
 
 	// init websocket
 	ws := handlers.WebSocketHandler
@@ -52,10 +55,12 @@ func Bootstrap(cfg *BootstrapConfig) {
 		UserHandler:        userHandler,
 		LevelHandler:       levelHandler,
 		AuthHandler:        authHandler,
+		SubbmissionHandler: submissionHandler,
 		ProgressHandler:    progressHandler,
 		LeadboardHandler:   leadboardHandler,
-		ChallengeHandler:   challengeHandler,
-		WsHandler:          ws,
+
+		ChallengeHandler: challengeHandler,
+		WsHandler:        ws,
 	}
 
 	routeConfig.Setup()

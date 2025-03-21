@@ -12,6 +12,7 @@ type UserSubmission struct {
 	UserID      string    `gorm:"type:uuid;not null"`
 	ChallengeID string    `gorm:"type:uuid;not null"`
 	Code        string    `gorm:"type:text;not null"`
+	Language    string    `gorm:"type:text;not null"`
 	Status      string    `gorm:"type:text;not null"` // "pending", "correct", "wrong"
 	Score       int       `gorm:"type:int"`
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
